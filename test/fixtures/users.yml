@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  username: MyString
+  top_score: 1
+  snowmen: 1
+  game_count: 1
+
+two:
+  username: MyString
+  top_score: 1
+  snowmen: 1
+  game_count: 1
