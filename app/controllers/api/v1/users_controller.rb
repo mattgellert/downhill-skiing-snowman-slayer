@@ -34,47 +34,41 @@ class Api::V1::UsersController < ApplicationController
     end
 
     if @user.save
-      render json: @user
+      render json: {
+        top_score_rank: rank_helper('top_score'),
+        most_snowmen_rank: rank_helper('most_snowmen'),
+        total_snowmen_rank: rank_helper('total_snowmen')
+      }
     else
       render json: {errors: @user.errors.full_messages}, status: 422
     end
   end
 
   def rank_helper(attribute)
-    users = User.all.sort_by { |user| user[`#{attribute}`]}
-    username = params[:username]
-    users.each_with_index do |user, i|
-      if user.username == username
-        user_rank = i
+    @users = User.all.sort_by { |user| user[`#{attribute}`]}
+    @username = params[:username]
+    @user_rank = 0
+    @users.each_with_index do |user, i|
+      if user.username == @username
+        @user_rank = i
       end
     end
-    return user_rank
+    return @user_rank
   end
 
-  def rank
+  def leaderboard
     render json: {
-      top_score_rank: rank_helper('top_score'),
-      most_snowmen_rank: rank_helper('most_snowmen'),
-      total_snowmen_rank: rank_helper('total_snowmen')
+      'top_scorers': top_helper('top_score'),
+      'top_slayers': top_helper('most_snowmen'),
+      'genocidal_maniacs': top_helper('total_snowmen')
     }
   end
 
-
-
-  def top_scorers
-    @users = User.all.sort_by { |user| user.top_score}[0..2].reverse
-    render json: @users
+  def top_helper(attribute)
+    users = User.all.sort_by { |user| user[`#{attribute}`]}[0..2].reverse
+    return users
   end
 
-  def top_slayers
-    @users = User.all.sort_by { |user| user.most_snowmen}[0..2].reverse
-    render json: @users
-  end
-
-  def genocidal_maniacs
-    @users = User.all.sort_by { |user| user.total_snowmen}[0..2].reverse
-    render json: @users
-  end
 
   private
   def user_params
