@@ -45,12 +45,12 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def rank_helper(attribute)
-    @users = User.all.sort_by { |user| user[`#{attribute}`]}
+    @users = User.all.sort {|a,b| b["#{attribute}"] <=> a["#{attribute}"]}
     @username = params[:username]
     @user_rank = 0
     @users.each_with_index do |user, i|
       if user.username == @username
-        @user_rank = i
+        @user_rank = i + 1
       end
     end
     return @user_rank
@@ -65,7 +65,7 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def top_helper(attribute)
-    users = User.all.sort_by { |user| user[`#{attribute}`]}[0..2].reverse
+    users = User.all.sort {|a,b| b["#{attribute}"] <=> a["#{attribute}"]}[0..2]
     return users
   end
 
